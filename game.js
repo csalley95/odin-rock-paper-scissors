@@ -1,5 +1,3 @@
-document.body.textContent = "Hello World!";
-
 function getComputerChoice() {
     const choices = ["rock", "paper", "scissors"];
     const randomIndex = Math.floor(Math.random() * choices.length);
@@ -15,19 +13,16 @@ function getHumanChoice() {
     return choice;
 }
 
-const humanSelection = getHumanChoice();
-const computerSelection = getComputerChoice();
-
-playRound(humanSelection, computerSelection);
-
 function playGame() {
     let humanScore = 0;
     let computerScore = 0;
+    const results = [];
+
     for (let i = 0; i < 5; i++) {
         const humanSelection = getHumanChoice();
         const computerSelection = getComputerChoice();
         const result = playRound(humanSelection, computerSelection);
-        console.log(`Round ${i + 1}: You chose ${humanSelection}, Computer chose ${computerSelection}. ${result}`);
+        results.push(`Round ${i + 1}: You chose ${humanSelection}, Computer chose ${computerSelection}. ${result}`);
     }
     function playRound(humanChoice, computerChoice) {
         if (humanChoice === computerChoice) {
@@ -43,6 +38,9 @@ function playGame() {
             return "Computer wins!";
         }
     }
+
+    results.push(`Final score: You ${humanScore}, Computer ${computerScore}`);
+    document.body.textContent = results.join("\n");
 }
 
 playGame();
