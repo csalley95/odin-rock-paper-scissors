@@ -46,3 +46,5 @@ function playGame() {
         console.log(`Round ${i + 1}: You chose ${humanSelection}, Computer chose ${computerSelection}. ${result}`);
     }
 }
+
+playGame();
