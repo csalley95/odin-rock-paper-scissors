@@ -14,3 +14,6 @@ function getHumanChoice() {
     }
     return choice;
 }
+
+const humanScore = 0;
+const computerScore = 0;
