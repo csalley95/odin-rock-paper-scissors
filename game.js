@@ -4,11 +4,21 @@ let humanScore = 0;
 let computerScore = 0;
 let roundNum = 0;
 
+// Make a list with the three possible choices.
+// Pick one at random.
+// Return that random choice to the game.
 function getComputerChoice() {
     const choices = ['rock', 'paper', 'scissors'];
     return choices[Math.floor(Math.random() * choices.length)];
 }
 
+// If both players picked the same move, the round is a tie.
+// Otherwise, check the winning rules:
+//   - rock beats scissors
+//   - paper beats rock
+//   - scissors beats paper
+// If one of those rules matches, the human wins.
+// If none match, the human loses.
 function playRound(humanChoice, computerChoice) {
     if (humanChoice === computerChoice) return 'tie';
     if (
@@ -19,6 +29,15 @@ function playRound(humanChoice, computerChoice) {
     return 'loss';
 }
 
+
+// Stop immediately if someone already reached 5 points.
+// Read which move the player clicked.
+// Ask the computer to choose a move.
+// Compare the two moves to decide if the player won, lost, or tied.
+// Add 1 point to the appropriate score.
+// Show the result in the status banner.
+// Add the round details to the results table.
+// If either player reaches 5 points, end the game and disable the buttons.
 function handleSelection(event) {
     const buttons = document.querySelectorAll('#controls button');
 
@@ -80,12 +99,17 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Wire up buttons
+
+// Find every game button.
+// When a button is clicked, run the handleSelection logic.
+// This makes the game respond to the player's move.
 document.querySelectorAll('#controls button').forEach(btn => {
     btn.addEventListener('click', handleSelection);
 });
 
-// Reset / Play Again
+// Reset the score, round counter, and result table.
+// Clear the status message.
+// Show the buttons again so the player can start a new game.
 document.getElementById('reset-btn').addEventListener('click', () => {
     humanScore = 0;
     computerScore = 0;
