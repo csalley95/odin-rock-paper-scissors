@@ -1,57 +1,102 @@
-function getComputerChoice() {
-    const choices = ["rock", "paper", "scissors"];
-    const randomIndex = Math.floor(Math.random() * choices.length);
-    return choices[randomIndex];
-}
+const EMOJI = { rock: '✊', paper: '✋', scissors: '✌️' };
 
 let humanScore = 0;
 let computerScore = 0;
-let roundNumber = 0;
+let roundNum = 0;
+
+function getComputerChoice() {
+    const choices = ['rock', 'paper', 'scissors'];
+    return choices[Math.floor(Math.random() * choices.length)];
+}
 
 function playRound(humanChoice, computerChoice) {
-    if (humanChoice === computerChoice) {
-        return "It's a tie!";
-    }
-    if ((humanChoice === "rock" && computerChoice === "scissors") ||
-        (humanChoice === "paper" && computerChoice === "rock") ||
-        (humanChoice === "scissors" && computerChoice === "paper")) {
-        humanScore++;
-        return "You win!";
-    }
-    computerScore++;
-    return "Computer wins!";
+    if (humanChoice === computerChoice) return 'tie';
+    if (
+        (humanChoice === 'rock'     && computerChoice === 'scissors') ||
+        (humanChoice === 'paper'    && computerChoice === 'rock')     ||
+        (humanChoice === 'scissors' && computerChoice === 'paper')
+    ) return 'win';
+    return 'loss';
 }
 
 function handleSelection(event) {
-    if (humanScore === 5 || computerScore === 5) {
-        return;
+    const buttons = document.querySelectorAll('#controls button');
+
+    if (humanScore >= 5 || computerScore >= 5) return;
+
+    const humanChoice    = event.target.dataset.choice;
+    const computerChoice = getComputerChoice();
+    const outcome        = playRound(humanChoice, computerChoice);
+
+    roundNum++;
+    if (outcome === 'win')  humanScore++;
+    if (outcome === 'loss') computerScore++;
+
+    // Update scoreboard
+    document.getElementById('human-score').textContent    = humanScore;
+    document.getElementById('computer-score').textContent = computerScore;
+
+    // Update status banner
+    const banner = document.getElementById('status-banner');
+    banner.className = '';
+    if (outcome === 'win') {
+        banner.textContent = `🎉 You win this round! ${EMOJI[humanChoice]} beats ${EMOJI[computerChoice]}`;
+        banner.classList.add('win');
+    } else if (outcome === 'loss') {
+        banner.textContent = `😞 Computer wins this round! ${EMOJI[computerChoice]} beats ${EMOJI[humanChoice]}`;
+        banner.classList.add('loss');
+    } else {
+        banner.textContent = `🤝 It's a tie! You both chose ${EMOJI[humanChoice]}`;
+        banner.classList.add('tie');
     }
 
-    const humanSelection = event.target.dataset.choice;
-    const computerSelection = getComputerChoice();
-    const result = playRound(humanSelection, computerSelection);
+    // Add a row to the table
+    const tbody = document.getElementById('rounds-body');
+    const row   = document.createElement('tr');
 
-    roundNumber++;
+    const outcomeText  = outcome === 'win' ? 'You Win 🏆' : outcome === 'loss' ? 'CPU Wins 🤖' : 'Tie 🤝';
+    const outcomeClass = `outcome-${outcome}`;
 
-    const resultsBody = document.querySelector("#results-body");
-    const row = document.createElement("tr");
     row.innerHTML = `
-        <td>${roundNumber}</td>
-        <td>${humanSelection}</td>
-        <td>${computerSelection}</td>
-        <td>${result}</td>
+        <td>${roundNum}</td>
+        <td><span class="emoji">${EMOJI[humanChoice]}</span>${capitalize(humanChoice)}</td>
+        <td><span class="emoji">${EMOJI[computerChoice]}</span>${capitalize(computerChoice)}</td>
+        <td class="${outcomeClass}">${outcomeText}</td>
+        <td>${humanScore} – ${computerScore}</td>
     `;
-    resultsBody.appendChild(row);
+    tbody.appendChild(row);
 
-    const score = document.querySelector("#score");
-    score.textContent = `Score: You ${humanScore}, Computer ${computerScore}`;
-
-    if (humanScore === 5 || computerScore === 5) {
-        const winner = humanScore === 5 ? "You win the game!" : "Computer wins the game!";
-        document.querySelector("#game-over").textContent = winner;
+    // Check for game over
+    if (humanScore >= 5 || computerScore >= 5) {
+        const gameWinner = humanScore >= 5 ? '🏆 You win the game!' : '🤖 Computer wins the game!';
+        banner.textContent = gameWinner;
+        banner.className = 'game-over';
+        buttons.forEach(btn => btn.disabled = true);
+        document.getElementById('reset-btn').style.display = 'inline-block';
     }
 }
 
-document.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", handleSelection);
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Wire up buttons
+document.querySelectorAll('#controls button').forEach(btn => {
+    btn.addEventListener('click', handleSelection);
+});
+
+// Reset / Play Again
+document.getElementById('reset-btn').addEventListener('click', () => {
+    humanScore = 0;
+    computerScore = 0;
+    roundNum    = 0;
+
+    document.getElementById('human-score').textContent    = '0';
+    document.getElementById('computer-score').textContent = '0';
+    document.getElementById('status-banner').textContent  = '';
+    document.getElementById('status-banner').className    = '';
+    document.getElementById('rounds-body').innerHTML      = '';
+    document.getElementById('reset-btn').style.display   = 'none';
+
+    document.querySelectorAll('#controls button').forEach(btn => btn.disabled = false);
 });
