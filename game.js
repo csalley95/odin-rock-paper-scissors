@@ -6,6 +6,7 @@ function getComputerChoice() {
 
 let humanScore = 0;
 let computerScore = 0;
+let roundNumber = 0;
 
 function playRound(humanChoice, computerChoice) {
     if (humanChoice === computerChoice) {
@@ -29,14 +30,25 @@ function handleSelection(event) {
     const humanSelection = event.target.dataset.choice;
     const computerSelection = getComputerChoice();
     const result = playRound(humanSelection, computerSelection);
-    const results = document.querySelector("#results");
 
-    results.textContent = `You chose ${humanSelection}. Computer chose ${computerSelection}. ${result} ` +
-        `Score: You ${humanScore}, Computer ${computerScore}.`;
+    roundNumber++;
+
+    const resultsBody = document.querySelector("#results-body");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${roundNumber}</td>
+        <td>${humanSelection}</td>
+        <td>${computerSelection}</td>
+        <td>${result}</td>
+    `;
+    resultsBody.appendChild(row);
+
+    const score = document.querySelector("#score");
+    score.textContent = `Score: You ${humanScore}, Computer ${computerScore}`;
 
     if (humanScore === 5 || computerScore === 5) {
         const winner = humanScore === 5 ? "You win the game!" : "Computer wins the game!";
-        results.textContent += ` ${winner}`;
+        document.querySelector("#game-over").textContent = winner;
     }
 }
 
